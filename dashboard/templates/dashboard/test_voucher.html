@@ -1,0 +1,8 @@
+{% extends "dashboard/base.html" %}
+{% load static %}
+
+{% block content %}
+    <div>
+        <img src="{% static 'dashboard/login_qr.png' %}?{% now 'U' %}" alt="">
+    </div>
+{% endblock content %}

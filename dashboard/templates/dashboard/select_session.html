@@ -12,10 +12,18 @@
 </head>
 <body>
     <div class="container justify-content-center align-items-center" style="height:100px;">
+        {% if messages %}
+            {% for message in messages %}
+                <div class="alert alert-{{message.tags}} mb-2">
+                    {{ message }}
+                </div>
+            {% endfor %}
+        {% endif %}
+
         <h2>Select mikrotik session</h2>
+
         <form method="post">
             <select class="form-select" name="session_name">
-                    <option selected value="new_session">New Session</option>
                 {% for session in sessions %}
                     <option value="{{ session.session_name }}">{{ session.session_name }}</option>
                 {% endfor %}
@@ -23,6 +31,7 @@
             {% csrf_token %}
             <button class="my-2 btn btn-primary">apply</button>
         </form>
+        <a href="{% url 'create_session' %}">new session</a>
     </div>
 </body>
 </html>

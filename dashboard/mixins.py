@@ -3,9 +3,9 @@ from django.urls import reverse
 
 
 class SessionRequiredMixin:
-    session_key = 'mikrotik'  # Default session key
+    session_key = 'pk' 
 
     def dispatch(self, request, *args, **kwargs):
         if self.session_key not in request.session:
-            return redirect(reverse('select_session'))  # Ganti dengan URL atau view yang sesuai
+            return redirect(reverse('select_session')) 
         return super().dispatch(request, *args, **kwargs)

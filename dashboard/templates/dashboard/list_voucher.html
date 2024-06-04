@@ -1,0 +1,16 @@
+{% extends "dashboard/base.html" %}
+{% load static %}
+
+{% block content %}
+    <p>
+        <a href="{% url 'create_voucher' %}">Create voucher</a>
+    </p>
+    {% for voucher in vouchers %}
+        {% with image_path="dashboard/"|add:voucher.username|add:".png" %}
+            <img src="{% static image_path %}" alt="">
+        {% endwith %}
+        <p>username: {{ voucher.username }}</p>
+        <p>pasword: {{ voucher.password }}</p>
+        <p>uptime: {{ voucher.uptime_value }}{{ voucher.uptime_unit }}</p>
+    {% endfor %}
+{% endblock content %}

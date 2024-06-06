@@ -10,5 +10,7 @@ urlpatterns = [
     path('profile/list', views.ListProfile.as_view(), name='list_profile'),
     path('voucher/create', views.CreateVoucher.as_view(), name='create_voucher'),
     path('voucher/list', views.ListVoucher.as_view(), name='list_voucher'),
+    path('pdf/list', views.ListVoucherPdf.as_view(), name='list_voucher_pdf'),
+    path('pdf/<int:pk>', views.DetailVoucherPdf.as_view(), name='detail_voucher_pdf'),
 
 ]

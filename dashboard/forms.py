@@ -16,6 +16,7 @@ class VoucherForm(forms.Form):
         ("d", "day"),
     ]
 
+    name = forms.CharField(max_length=64)
     qty = forms.IntegerField(min_value=1 ,label='Quantity')
     profile = forms.ModelChoiceField(queryset=Profile.objects.all(), widget=forms.Select, required=True)
     uptime_value = forms.IntegerField(min_value=1)

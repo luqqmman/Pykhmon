@@ -1,0 +1,27 @@
+|--------------------|      |--------------------|
+| Title              |      | Title              |
+|                    |      |                    |
+| |------| username  |      | |------| username  |
+| |  qr  | password  |      | |  qr  | password  |
+| |------| profile   |      | |------| profile   |
+|                    |      |                    |
+| [   ad space     ] |      | [   ad space     ] |
+|--------------------|      |--------------------|
+|--------------------|      |--------------------|
+| Title              |      | Title              |
+|                    |      |                    |
+| |------| username  |      | |------| username  |
+| |  qr  | password  |      | |  qr  | password  |
+| |------| profile   |      | |------| profile   |
+|                    |      |                    |
+| [   ad space     ] |      | [   ad space     ] |
+|--------------------|      |--------------------|
+|--------------------|      |--------------------|
+| Title              |      | Title              |
+|                    |      |                    |
+| |------| username  |      | |------| username  |
+| |  qr  | password  |      | |  qr  | password  |
+| |------| profile   |      | |------| profile   |
+|                    |      |                    |
+| [   ad space     ] |      | [   ad space     ] |
+|--------------------|      |--------------------|

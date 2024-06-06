@@ -3,16 +3,17 @@ from django.forms.models import model_to_dict
 from django.shortcuts import render, redirect
 from django.urls import reverse, reverse_lazy
 from django.contrib import messages
+from django.conf import settings
 
 from nanoid import generate
 from string import ascii_letters, ascii_lowercase
 
 
 from .mikrotik.routeros_api import HotspotApi
-from .mikrotik.wifiqr import generate_qr
+from .mikrotik.wifiqr import generate_qr, create_voucher_pdf
 
 from .mixins import SessionRequiredMixin
-from .models import Session, Profile, Voucher
+from .models import Session, Profile, Voucher, VoucherPdf
 from .forms import ProfileForm, VoucherForm
 
 from reportlab.pdfgen import canvas
@@ -108,7 +109,6 @@ class ListProfile(SessionRequiredMixin, ListView):
 #                 generate_qr(session.DNS_name, username, password, f"dashboard/static/dashboard/{username}.png")
 #         return super().form_valid(form)
 
-    
 #     def form_invalid(self, form):
 #         messages.warning(self.request, 'Terdapat kesalahan pada formulir.')
 #         return super().form_invalid(form)
@@ -127,16 +127,6 @@ class ListVoucher(SessionRequiredMixin, ListView):
 
 
 # Fungsi untuk membuat PDF dari kumpulan voucher
-def create_voucher_pdf(vouchers, pdf_path):
-    c = canvas.Canvas(pdf_path)
-    y_position = 800
-    for voucher in vouchers:
-        c.drawString(100, y_position, f"Username: {voucher['username']}, Password: {voucher['password']}")
-        img_path = f"dashboard/static/dashboard/{voucher['username']}.png"
-        c.drawImage(img_path, 100, y_position - 20, width=100, height=100)
-        y_position -= 120
-    c.save()
-    return pdf_path
 
 
 # View untuk membuat voucher dan PDF
@@ -146,6 +136,7 @@ class CreateVoucher(SessionRequiredMixin, FormView):
     success_url = reverse_lazy('list_voucher')
 
     def form_valid(self, form):
+        name = form.cleaned_data['name']
         qty = form.cleaned_data['qty']
         uptime_value = form.cleaned_data['uptime_value']
         uptime_unit = form.cleaned_data['uptime_unit']
@@ -163,9 +154,28 @@ class CreateVoucher(SessionRequiredMixin, FormView):
                 voucher = Voucher(username=username, password=password, session=session, profile=profile, uptime_value=uptime_value, uptime_unit=uptime_unit)
                 voucher.save()
                 vouchers.append(model_to_dict(voucher))
-                generate_qr(session.DNS_name, username, password, f"dashboard/static/dashboard/{username}.png")
+                qr_path = os.path.join(settings.QR_DIR, f"{username}.png")
+                generate_qr(session.DNS_name, username, password, qr_path)
         
-        pdf_filename = f"vouchers_{session.id}.pdf"
-        pdf_path = create_voucher_pdf(vouchers, f"dashboard/static/dashboard/pdf/{session.pk}.pdf")
+        VoucherPdf(session=session, name=name).save()
+        pdf_path = os.path.join(settings.PDF_DIR, f"{name}.pdf")
+        create_voucher_pdf(vouchers, settings.QR_DIR, pdf_path)
         
         return super().form_valid(form)
+
+
+class ListVoucherPdf(SessionRequiredMixin, ListView):
+    model = VoucherPdf
+    template_name = 'dashboard/list_voucher_pdf.html'
+    context_object_name = 'voucher_pdf'
+
+    def get_queryset(self):
+        session = self.request.session["pk"]
+        return VoucherPdf.objects.filter(session=session)
+
+
+class DetailVoucherPdf(SessionRequiredMixin, DetailView):
+    model = VoucherPdf
+    template_name = 'dashboard/detail_voucher_pdf.html'
+    context_object_name = 'pdf'
+

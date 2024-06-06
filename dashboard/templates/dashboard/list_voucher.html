@@ -6,7 +6,7 @@
         <a href="{% url 'create_voucher' %}">Create voucher</a>
     </p>
     {% for voucher in vouchers %}
-        {% with image_path="dashboard/"|add:voucher.username|add:".png" %}
+        {% with image_path="dashboard/qr/"|add:voucher.username|add:".png" %}
             <img src="{% static image_path %}" alt="">
         {% endwith %}
         <p>username: {{ voucher.username }}</p>

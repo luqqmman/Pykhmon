@@ -8,8 +8,8 @@
         {% for profile in profiles %}
             <div>        
                 <h3>{{ profile }}</h3>
-                <p>Download limit: {{ profile.download_limit_value }} / {{ profile.download_limit_unit }}bps</p>
-                <p>Upload Limit: {{ profile.upload_limit_value }} / {{ profile.upload_limit_unit }}bps</p>
+                <p>Download limit: {{ profile.download_limit_value }} {{ profile.download_limit_unit }}bps</p>
+                <p>Upload Limit: {{ profile.upload_limit_value }} {{ profile.upload_limit_unit }}bps</p>
                 <p>Description: {{ profile.description }}</p>
             </div>
         {% endfor %}   

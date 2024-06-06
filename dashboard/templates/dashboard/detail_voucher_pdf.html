@@ -1,0 +1,6 @@
+{% load static %}
+{% block content %}
+    {% with pdf_path="dashboard/pdf/"|add:pdf.name|add:".pdf" %}
+        <iframe src="{% static pdf_path %}" height="1080px" width="100%"></iframe>
+    {% endwith %}
+{% endblock content %}

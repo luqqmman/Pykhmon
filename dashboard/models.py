@@ -20,7 +20,7 @@ class Profile(models.Model):
         ('M', 'Mbps'),
     ]
 
-    session = models.ForeignKey(Session, on_delete=models.CASCADE, related_name='session')
+    session = models.ForeignKey(Session, on_delete=models.CASCADE, related_name='profile_session')
     profile_name = models.CharField(max_length=64, unique=True, help_text="Nama unik untuk profil rate limit")
     download_limit_value = models.IntegerField(validators=[MinValueValidator(1)], help_text="Nilai batas kecepatan download (misalnya, 1024 untuk 1 Mbps)")
     download_limit_unit = models.CharField(max_length=1, choices=RATE_UNIT_CHOICES, help_text="Unit batas kecepatan download (Kbps, Mbps, Gbps)")
@@ -61,3 +61,8 @@ class Voucher(models.Model):
     
     def uptime_limit(self):
         return f"{self.uptime_value}{self.uptime_unit}"
+
+
+class VoucherPdf(models.Model):
+    session = models.ForeignKey(Session, on_delete=models.CASCADE, related_name='voucher_pdf_session')
+    name = models.CharField(max_length=64, unique=True)

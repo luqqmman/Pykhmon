@@ -1,0 +1,16 @@
+{% extends "dashboard/base.html" %}
+
+{% block content %}
+    <p>
+        <a href="{% url 'create_voucher' %}">Create Voucher</a>
+    </p>
+    <div class="p-2">
+        {% for pdf in voucher_pdf %}
+            <div>        
+                <h3>{{ pdf.name }}</h3>
+                <a href="{% url 'detail_voucher_pdf' pk=pdf.pk %}">print</a>
+            </div>
+        {% endfor %}   
+    </div>
+
+{% endblock content %}

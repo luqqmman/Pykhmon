@@ -1,9 +1,13 @@
 {% extends "dashboard/base.html" %}
 
 {% block content %}
-    <p>
-        <a href="{% url 'create_profile' %}">Create Profile</a>
-    </p>
+
+    <a href="{% url 'create_profile' %}">
+        <button type="button" class="text-white btn bg-custom-500 border-custom-500 hover:text-white hover:bg-custom-600 hover:border-custom-600 focus:text-white focus:bg-custom-600 focus:border-custom-600 focus:ring focus:ring-custom-500/20 active:text-white active:bg-custom-600 active:border-custom-600 active:ring active:ring-custom-500/20 dark:ring-custom-400/20">
+            Create Profile
+        </button>
+    </a>
+
     <div class="p-2">
         {% for profile in profiles %}
             <div>        

@@ -40,7 +40,7 @@
     <!-- Tailwind CSS -->
     <link rel="stylesheet" href="{% static 'css/tailwind.css' %}" />
 
-    <title>{% block title %}{% endblock title %} | pykhmon</title>
+    <title>{% block title %}{% endblock title %} | Pykhmon</title>
     <script type="module"></script>
   </head>
 
@@ -50,8 +50,13 @@
     <div
       class="group-data-[sidebar-size=sm]:min-h-sm group-data-[sidebar-size=sm]:relative"
     >
-      {% block sidebar %} {% include 'components/sidebar.html' %} {% endblock sidebar %} 
-      {% block header %} {% include 'components/header.html' %} {% endblock header %}
+      {% block sidebar %} 
+        {% include 'components/sidebar.html' %} 
+      {% endblock sidebar %} 
+
+      {% block header %} 
+        {% include 'components/header.html' %} 
+      {% endblock header %}
       <div
         class="container relative min-h-screen group-data-[sidebar-size=sm]:min-h-sm"
       >
@@ -61,10 +66,16 @@
           <div
             class="container-fluid group-data-[content=boxed]:max-w-boxed mx-auto"
           >
-            {% block pagetitle %} {% include 'components/page-title.html' %} {% endblock pagetitle %} 
-            {% if messages %} {% for message in messages %}
-            <div class="alert alert-{{message.tags}} mb-2">{{ message }}</div>
-            {% endfor %} {% endif %}
+
+            {% if messages %} 
+              {% for message in messages %}
+                <div
+                  class="px-4 py-3 text-sm text-yellow-500 border border-transparent rounded-md bg-yellow-50 dark:bg-yellow-400/20"
+                >
+                  {{ message }}
+                </div>
+              {% endfor %} 
+            {% endif %}
 
             <div class="row">
               <div class="col-md-8">{% block content %}{% endblock %}</div>

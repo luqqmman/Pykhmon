@@ -77,9 +77,19 @@
               {% endfor %} 
             {% endif %}
 
-            <div class="row">
-              <div class="col-md-8">{% block content %}{% endblock %}</div>
+            <div class="container relative min-h-screen group-data-[sidebar-size=sm]:min-h-sm">
+               <div class="flex py-4">
+                  <div class="flex w-11/12 justify-center max-w-screen-lg">
+                    <div class="flex flex-col w-full md:w-2/3 mr-0 md:mr-6">
+                      {% block left_content %}{% endblock %}
+                    </div>
+                    <div class="hidden md:flex flex-col flex-grow">
+                      {% block right_content %}{% endblock %}
+                    </div>
+                </div>
+              </div>
             </div>
+            
           </div>
         </div>
       </div>

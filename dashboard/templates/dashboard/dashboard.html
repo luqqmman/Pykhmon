@@ -1,31 +1,31 @@
 {% extends "dashboard/base.html" %}
 
-{% block content %}
-    <div>
-        <h3>Resource</h3>
-        <p>uptime: {{ uptime }}</p>
-        <p>version: {{ version }}</p>
-        <p>architecture name: {{ architecture_name }}</p>
-        <p>board name: {{ board_name }}</p>
-        <p>cpu: {{ cpu }}</p>
-        <p>cpu load: {{ cpu_load }}%</p>
-        <p>memory: {{ free_memory }} available / {{ total_memory }} total</p>
-        <p>hdd: {{ free_hdd_space }} available / {{ total_hdd_space }} total</p>
+{% block title %}Dashboard{% endblock %}
 
-        <p></p>
-    </div>
-    
+{% block left_content %}
+  <div class="p-4 bg-white rounded shadow">
+    <h3>Resource</h3>
+    <p>uptime: {{ uptime }}</p>
+    <p>version: {{ version }}</p>
+    <p>architecture name: {{ architecture_name }}</p>
+    <p>board name: {{ board_name }}</p>
+    <p>cpu: {{ cpu }}</p>
+    <p>cpu load: {{ cpu_load }}%</p>
+    <p>memory: {{ free_memory }} available / {{ total_memory }} total</p>
+    <p>hdd: {{ free_hdd_space }} available / {{ total_hdd_space }} total</p>
+  </div>
+{% endblock left_content %}
 
-    <div>
-        <h3>Active Users</h3>
-        {% for user in active_users %}
-            <p><strong>{{ user.user }}</strong></p>
-            <p>{{ user.address }}</p>
-            <p>{{ user.uptime }}</p>
-            <p>{{ user.server }}</p>
-        {% endfor %}
-    </div>
-    <p>
-        {{ resource }}
-    </p>
-{% endblock content %}
+{% block right_content %}
+  <div class="p-4 bg-white rounded shadow">
+    <h3>Active Users</h3>
+    {% for user in active_users %}
+      <div class="mb-4">
+        <p><strong>{{ user.user }}</strong></p>
+        <p>{{ user.address }}</p>
+        <p>{{ user.uptime }}</p>
+        <p>{{ user.server }}</p>
+      </div>
+    {% endfor %}
+  </div>
+{% endblock right_content %}

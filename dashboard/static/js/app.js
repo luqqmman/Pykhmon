@@ -242,6 +242,7 @@ applyScrollbarLogic();
 function init() {
   windowLoadContent();
   initMenuItemScroll();
+  console.log("Hello World");
 }
 
 init();

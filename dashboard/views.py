@@ -142,7 +142,8 @@ class CreateVoucher(SessionRequiredMixin, FormView):
 
     def form_valid(self, form):
         name = form.cleaned_data['name']
-        price = form.cleaned_data['price']
+        price_min = form.cleaned_data['price_min']
+        price_max = form.cleaned_data['price_max']
         qty = form.cleaned_data['qty']
         uptime_value = form.cleaned_data['uptime_value']
         uptime_unit = form.cleaned_data['uptime_unit']
@@ -157,7 +158,7 @@ class CreateVoucher(SessionRequiredMixin, FormView):
             username = generate(ascii_lowercase, 8)
             password = generate(ascii_letters, 8)
             if hotspot.add_user(username, password, uptime_limit, profile.profile_name):
-                voucher = Voucher(username=username, password=password, price=price, session=session, profile=profile, uptime_value=uptime_value, uptime_unit=uptime_unit)
+                voucher = Voucher(username=username, password=password, price_min=price_min, price_max=price_max, session=session, profile=profile, uptime_value=uptime_value, uptime_unit=uptime_unit)
                 voucher.save()
                 vouchers.append(model_to_dict(voucher))
                 qr_path = os.path.join(settings.QR_DIR, f"{username}.png")

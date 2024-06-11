@@ -1,7 +1,6 @@
 from django.db import models
 from django.core.validators import MinValueValidator
 
-
 class Session(models.Model):
     session_name = models.CharField(max_length=64, unique=True)
     mikrotik_IP = models.CharField(max_length=64)
@@ -41,7 +40,6 @@ class Profile(models.Model):
     def __str__(self):
         return self.profile_name
     
-
 class Voucher(models.Model):
     UPTIME_UNIT_CHOICES = [
         ("s", "second"),

@@ -11,6 +11,9 @@
         {% endwith %}
         <p>username: {{ voucher.username }}</p>
         <p>pasword: {{ voucher.password }}</p>
-        <p>uptime: {{ voucher.uptime_value }}{{ voucher.uptime_unit }}</p>
+        <p>limit uptime: {{ voucher.limit_uptime }}{{ voucher.uptime_unit }}</p>
+        <p>uptime: {{ voucher.uptime }}</p>
+        <p>current price: {{ voucher.current_price }}</p>
+        <p>checkout date: {{ voucher.checkout_date }}</p>
     {% endfor %}
 {% endblock content %}

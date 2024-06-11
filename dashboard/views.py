@@ -4,6 +4,7 @@ from django.shortcuts import render, redirect
 from django.urls import reverse, reverse_lazy
 from django.contrib import messages
 from django.conf import settings
+from django.db.models import Sum
 
 from nanoid import generate
 from string import ascii_letters, ascii_lowercase
@@ -18,7 +19,9 @@ from .forms import ProfileForm, VoucherForm
 
 from reportlab.pdfgen import canvas
 from PIL import Image
+from datetime import date, timedelta
 import os
+
 
 
 class CreateSession(CreateView):
@@ -85,48 +88,50 @@ class ListProfile(SessionRequiredMixin, ListView):
         session = self.request.session["pk"]
         return Profile.objects.filter(session=session)
 
-        
-# class CreateVoucher(SessionRequiredMixin, FormView):
-#     form_class = VoucherForm
-#     template_name = 'dashboard/create_voucher.html'
-#     success_url = reverse_lazy('list_voucher') 
 
-#     def form_valid(self, form):
-#         qty = form.cleaned_data['qty']
-#         uptime_value = form.cleaned_data['uptime_value']
-#         uptime_unit = form.cleaned_data['uptime_unit']
-#         uptime_limit = f"{uptime_value}{uptime_unit}"
-
-#         profile = Profile.objects.get(profile_name=form.cleaned_data['profile'])
-#         session = Session.objects.get(pk=self.request.session["pk"])
-#         hotspot = HotspotApi.from_dict(self.request.session['api'])
-        
-#         for _ in range(int(qty)):
-#             username = generate(ascii_lowercase, 8)
-#             password = generate(ascii_letters, 8)
-#             if hotspot.add_user(username, password, uptime_limit, profile.profile_name):
-#                 Voucher(username=username, password=password, session=session, profile=profile, uptime_value=uptime_value, uptime_unit=uptime_unit).save()
-#                 generate_qr(session.DNS_name, username, password, f"dashboard/static/dashboard/{username}.png")
-#         return super().form_valid(form)
-
-#     def form_invalid(self, form):
-#         messages.warning(self.request, 'Terdapat kesalahan pada formulir.')
-#         return super().form_invalid(form)
-
-
-class ListVoucher(SessionRequiredMixin, ListView):
-    model = Voucher
-    template_name = 'dashboard/list_voucher.html'
-    context_object_name = 'vouchers'
-
-    def get_queryset(self):
+class ListVoucher(SessionRequiredMixin, View):
+    def get(self, request, *args, **kwargs):
         session = self.request.session["pk"]
-        return Voucher.objects.filter(session=session)
+        vouchers = Voucher.objects.filter(session=session)
 
+        hotspot = HotspotApi.from_dict(self.request.session['api'])
+        active_users = hotspot.get_active_users()
+        users = hotspot.get_users()
 
+        v_list = []
+        for user in users:
+            user = dict([(key.replace('-', '_'), val) for key, val in user.items()])
+            voucher = vouchers.filter(username=user['name'])
+            if voucher.count() < 1: 
+                continue
 
+            # voucher = voucher.first()
+            v = voucher.first().serialize()
+            v.update(user)
+            v.update({'current_price': voucher.first().get_price(len(active_users))})
+            v_list.append(v)
 
-# Fungsi untuk membuat PDF dari kumpulan voucher
+            if user['uptime'] == '0s' or voucher.first().checkout_date: 
+                continue
+            voucher.update(checkout_date=date.today())
+
+        print(v_list[-1])
+        print(len(active_users))
+        context = {
+            'vouchers': v_list
+        }
+
+        return render(request, 'dashboard/list_voucher.html', context)
+        # if users:
+        #     for user in users:
+        #         if user['uptime'] == '0s': continue
+        #         voucher = vouchers.filter(username=user['name'])
+        #         if voucher.count(): voucher.update(checkout_date=date.today())
+        # else:
+        #     messages.warning(self.request, "Connection error: Router address unreachable")
+        # return context
+
+    
 
 
 # View untuk membuat voucher dan PDF
@@ -137,6 +142,7 @@ class CreateVoucher(SessionRequiredMixin, FormView):
 
     def form_valid(self, form):
         name = form.cleaned_data['name']
+        price = form.cleaned_data['price']
         qty = form.cleaned_data['qty']
         uptime_value = form.cleaned_data['uptime_value']
         uptime_unit = form.cleaned_data['uptime_unit']
@@ -151,7 +157,7 @@ class CreateVoucher(SessionRequiredMixin, FormView):
             username = generate(ascii_lowercase, 8)
             password = generate(ascii_letters, 8)
             if hotspot.add_user(username, password, uptime_limit, profile.profile_name):
-                voucher = Voucher(username=username, password=password, session=session, profile=profile, uptime_value=uptime_value, uptime_unit=uptime_unit)
+                voucher = Voucher(username=username, password=password, price=price, session=session, profile=profile, uptime_value=uptime_value, uptime_unit=uptime_unit)
                 voucher.save()
                 vouchers.append(model_to_dict(voucher))
                 qr_path = os.path.join(settings.QR_DIR, f"{username}.png")
@@ -178,4 +184,21 @@ class DetailVoucherPdf(SessionRequiredMixin, DetailView):
     model = VoucherPdf
     template_name = 'dashboard/detail_voucher_pdf.html'
     context_object_name = 'pdf'
+
+
+class Income(SessionRequiredMixin, View):
+    def get(self, request, *args, **kwargs):
+        session = Session.objects.get(pk=self.request.session["pk"])
+        vouchers = Voucher.objects.filter(session=session)
+        daily = vouchers.filter(checkout_date=date.today()).aggregate(Sum('price_min', default=0))
+        weekly = vouchers.filter(checkout_date__gte=date.today()-timedelta(days=7)).aggregate(Sum('price_min', default=0))
+        monthly = vouchers.filter(checkout_date__gte=date.today()-timedelta(weeks=4)).aggregate(Sum('price_min', default=0))
+        context = {
+            'daily': daily,
+            'weekly': weekly,
+            'monthly': monthly
+        }
+        return render(self.request, 'dashboard/income.html', context)
+
+
 

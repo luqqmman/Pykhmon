@@ -18,7 +18,8 @@ class VoucherForm(forms.Form):
 
     name = forms.CharField(max_length=64)
     qty = forms.IntegerField(min_value=1 ,label='Quantity')
-    price = forms.IntegerField(min_value=1 ,label='Price')
+    price_min = forms.IntegerField(min_value=1)
+    price_max = forms.IntegerField(min_value=1)
     profile = forms.ModelChoiceField(queryset=Profile.objects.all(), widget=forms.Select, required=True)
     uptime_value = forms.IntegerField(min_value=1)
     uptime_unit = forms.ChoiceField(choices=UPTIME_UNIT_CHOICES)

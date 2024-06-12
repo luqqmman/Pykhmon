@@ -6,6 +6,9 @@ from django.contrib import messages
 from django.conf import settings
 from django.db.models import Sum
 
+from django.core.paginator import Paginator
+from django.shortcuts import render
+
 from nanoid import generate
 from string import ascii_letters, ascii_lowercase
 
@@ -89,39 +92,39 @@ class ListProfile(SessionRequiredMixin, ListView):
         return Profile.objects.filter(session=session)
 
 
-class ListVoucher(SessionRequiredMixin, View):
-    def get(self, request, *args, **kwargs):
-        session = self.request.session["pk"]
-        vouchers = Voucher.objects.filter(session=session)
+# class ListVoucher(SessionRequiredMixin, View):
+#     def get(self, request, *args, **kwargs):
+#         session = self.request.session["pk"]
+#         vouchers = Voucher.objects.filter(session=session)
 
-        hotspot = HotspotApi.from_dict(self.request.session['api'])
-        active_users = hotspot.get_active_users()
-        users = hotspot.get_users()
+#         hotspot = HotspotApi.from_dict(self.request.session['api'])
+#         active_users = hotspot.get_active_users()
+#         users = hotspot.get_users()
 
-        v_list = []
-        for user in users:
-            user = dict([(key.replace('-', '_'), val) for key, val in user.items()])
-            voucher = vouchers.filter(username=user['name'])
-            if voucher.count() < 1: 
-                continue
+#         v_list = []
+#         for user in users:
+#             user = dict([(key.replace('-', '_'), val) for key, val in user.items()])
+#             voucher = vouchers.filter(username=user['name'])
+#             if voucher.count() < 1: 
+#                 continue
 
-            # voucher = voucher.first()
-            v = voucher.first().serialize()
-            v.update(user)
-            v.update({'current_price': voucher.first().get_price(len(active_users))})
-            v_list.append(v)
+#             # voucher = voucher.first()
+#             v = voucher.first().serialize()
+#             v.update(user)
+#             v.update({'current_price': voucher.first().get_price(len(active_users))})
+#             v_list.append(v)
 
-            if user['uptime'] == '0s' or voucher.first().checkout_date: 
-                continue
-            voucher.update(checkout_date=date.today())
+#             if user['uptime'] == '0s' or voucher.first().checkout_date: 
+#                 continue
+#             voucher.update(checkout_date=date.today())
 
-        print(v_list[-1])
-        print(len(active_users))
-        context = {
-            'vouchers': v_list
-        }
+#         print(v_list[-1])
+#         print(len(active_users))
+#         context = {
+#             'vouchers': v_list
+#         }
 
-        return render(request, 'dashboard/list_voucher.html', context)
+#         return render(request, 'dashboard/list_voucher.html', context)
         # if users:
         #     for user in users:
         #         if user['uptime'] == '0s': continue
@@ -135,40 +138,40 @@ class ListVoucher(SessionRequiredMixin, View):
 
 
 # View untuk membuat voucher dan PDF
-class CreateVoucher(SessionRequiredMixin, FormView):
-    form_class = VoucherForm
-    template_name = 'dashboard/create_voucher.html'
-    success_url = reverse_lazy('list_voucher')
+# class CreateVoucher(SessionRequiredMixin, FormView):
+#     form_class = VoucherForm
+#     template_name = 'dashboard/create_voucher.html'
+#     success_url = reverse_lazy('list_voucher')
 
-    def form_valid(self, form):
-        name = form.cleaned_data['name']
-        price_min = form.cleaned_data['price_min']
-        price_max = form.cleaned_data['price_max']
-        qty = form.cleaned_data['qty']
-        uptime_value = form.cleaned_data['uptime_value']
-        uptime_unit = form.cleaned_data['uptime_unit']
-        uptime_limit = f"{uptime_value}{uptime_unit}"
+#     def form_valid(self, form):
+#         name = form.cleaned_data['name']
+#         price_min = form.cleaned_data['price_min']
+#         price_max = form.cleaned_data['price_max']
+#         qty = form.cleaned_data['qty']
+#         uptime_value = form.cleaned_data['uptime_value']
+#         uptime_unit = form.cleaned_data['uptime_unit']
+#         uptime_limit = f"{uptime_value}{uptime_unit}"
 
-        profile = Profile.objects.get(profile_name=form.cleaned_data['profile'])
-        session = Session.objects.get(pk=self.request.session["pk"])
-        hotspot = HotspotApi.from_dict(self.request.session['api'])
+#         profile = Profile.objects.get(profile_name=form.cleaned_data['profile'])
+#         session = Session.objects.get(pk=self.request.session["pk"])
+#         hotspot = HotspotApi.from_dict(self.request.session['api'])
         
-        vouchers = []
-        for _ in range(int(qty)):
-            username = generate(ascii_lowercase, 8)
-            password = generate(ascii_letters, 8)
-            if hotspot.add_user(username, password, uptime_limit, profile.profile_name):
-                voucher = Voucher(username=username, password=password, price_min=price_min, price_max=price_max, session=session, profile=profile, uptime_value=uptime_value, uptime_unit=uptime_unit)
-                voucher.save()
-                vouchers.append(model_to_dict(voucher))
-                qr_path = os.path.join(settings.QR_DIR, f"{username}.png")
-                generate_qr(session.DNS_name, username, password, qr_path)
+#         vouchers = []
+#         for _ in range(int(qty)):
+#             username = generate(ascii_lowercase, 8)
+#             password = generate(ascii_letters, 8)
+#             if hotspot.add_user(username, password, uptime_limit, profile.profile_name):
+#                 voucher = Voucher(username=username, password=password, price_min=price_min, price_max=price_max, session=session, profile=profile, uptime_value=uptime_value, uptime_unit=uptime_unit)
+#                 voucher.save()
+#                 vouchers.append(model_to_dict(voucher))
+#                 qr_path = os.path.join(settings.QR_DIR, f"{username}.png")
+#                 generate_qr(session.DNS_name, username, password, qr_path)
         
-        VoucherPdf(session=session, name=name).save()
-        pdf_path = os.path.join(settings.PDF_DIR, f"{name}.pdf")
-        create_voucher_pdf(vouchers, settings.QR_DIR, pdf_path)
+#         VoucherPdf(session=session, name=name).save()
+#         pdf_path = os.path.join(settings.PDF_DIR, f"{name}.pdf")
+#         create_voucher_pdf(vouchers, settings.QR_DIR, pdf_path)
         
-        return super().form_valid(form)
+#         return super().form_valid(form)
 
 
 class ListVoucherPdf(SessionRequiredMixin, ListView):
@@ -202,4 +205,80 @@ class Income(SessionRequiredMixin, View):
         return render(self.request, 'dashboard/income.html', context)
 
 
+class ListVoucher(SessionRequiredMixin, View):
+    def get(self, request, *args, **kwargs):
+        session = self.request.session["pk"]
+        vouchers = Voucher.objects.filter(session=session)
 
+        hotspot = HotspotApi.from_dict(self.request.session['api'])
+        active_users = hotspot.get_active_users()
+        users = hotspot.get_users()
+
+        v_list = []
+        if users:
+            for user in users:
+                user = dict([(key.replace('-', '_'), val) for key, val in user.items()])
+                voucher = vouchers.filter(username=user['name'])
+                if voucher.count() < 1:
+                    continue
+
+                v = voucher.first().serialize()
+                v.update(user)
+                v.update({'current_price': voucher.first().get_price(len(active_users))})
+                v_list.append(v)
+
+                if user['uptime'] == '0s' or voucher.first().checkout_date:
+                    continue
+                voucher.update(checkout_date=date.today())
+
+            paginator = Paginator(v_list, 10)  # Show 10 vouchers per page
+            page_number = request.GET.get('page')
+            page_obj = paginator.get_page(page_number)
+
+            context = {
+                'page_obj': page_obj,
+                'active_users_count': len(active_users),
+            }
+
+            return render(request, 'dashboard/list_voucher.html', context)
+        return render(request, 'dashboard/list_voucher.html')
+    
+class CreateVoucher(SessionRequiredMixin, FormView):
+    form_class = VoucherForm
+    template_name = 'dashboard/create_voucher.html'
+    success_url = reverse_lazy('list_voucher')
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['form'] = self.get_form()  # Include the form in the context
+        return context
+
+    def form_valid(self, form):
+        name = form.cleaned_data['name']
+        price_min = form.cleaned_data['price_min']
+        price_max = form.cleaned_data['price_max']
+        qty = form.cleaned_data['qty']
+        uptime_value = form.cleaned_data['uptime_value']
+        uptime_unit = form.cleaned_data['uptime_unit']
+        uptime_limit = f"{uptime_value}{uptime_unit}"
+
+        profile = Profile.objects.get(profile_name=form.cleaned_data['profile'])
+        session = Session.objects.get(pk=self.request.session["pk"])
+        hotspot = HotspotApi.from_dict(self.request.session['api'])
+        
+        vouchers = []
+        for _ in range(int(qty)):
+            username = generate(ascii_lowercase, 8)
+            password = generate(ascii_letters, 8)
+            if hotspot.add_user(username, password, uptime_limit, profile.profile_name):
+                voucher = Voucher(username=username, password=password, price_min=price_min, price_max=price_max, session=session, profile=profile, uptime_value=uptime_value, uptime_unit=uptime_unit)
+                voucher.save()
+                vouchers.append(model_to_dict(voucher))
+                qr_path = os.path.join(settings.QR_DIR, f"{username}.png")
+                generate_qr(session.DNS_name, username, password, qr_path)
+        
+        VoucherPdf(session=session, name=name).save()
+        pdf_path = os.path.join(settings.PDF_DIR, f"{name}.pdf")
+        create_voucher_pdf(vouchers, settings.QR_DIR, pdf_path)
+        
+        return super().form_valid(form)

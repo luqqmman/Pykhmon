@@ -31,7 +31,6 @@ class VoucherForm(forms.ModelForm):
             'placeholder': 'Voucher Name'
         })
     )
-
     class Meta:
         model = Voucher
         fields = ['profile', 'uptime_value', 'uptime_unit', 'price_min', 'price_max']

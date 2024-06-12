@@ -15,9 +15,9 @@ class MikroTikApi:
         url = f'http://{self.address}/rest{endpoint}'
         try:
             if method == 'GET':
-                response = requests.get(url, auth=(self.username, self.password), timeout=1)
+                response = requests.get(url, auth=(self.username, self.password), timeout=10)
             elif method == 'POST':
-                response = requests.post(url, auth=(self.username, self.password), json=data, timeout=1)
+                response = requests.post(url, auth=(self.username, self.password), json=data, timeout=10)
             else:
                 raise ValueError(f"Method {method} not supported")
 

@@ -149,7 +149,7 @@ class ListVoucher(SessionRequiredMixin, View):
                     continue
                 voucher.update(checkout_date=date.today())
 
-            paginator = Paginator(v_list, 10)  # Show 10 vouchers per page
+            paginator = Paginator(v_list, 6)  # Show 6 vouchers per page
             page_number = request.GET.get('page')
             page_obj = paginator.get_page(page_number)
 

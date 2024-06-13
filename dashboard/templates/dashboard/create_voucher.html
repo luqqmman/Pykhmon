@@ -1,7 +1,7 @@
 {% extends "dashboard/base.html" %}
 
 {% block content %}
-<div class="container mx-auto p-4">
+<div class="container mx-auto mt-8 max-w-lg p-6 bg-white shadow-md rounded-lg space-y-6">
     <div class="flex justify-center">
         <div class="w-full max-w-md">
             <h2 class="text-2xl font-bold mb-4">Create Voucher</h2>
@@ -9,17 +9,17 @@
                 {% csrf_token %}
                 {% for field in form %}
                     <div>
-                        <label class="block text-gray-700">{{ field.label_tag }}</label>
+                        <label class="block text-gray-700 font-medium">{{ field.label_tag }}</label>
                         {{ field }}
                         {% if field.help_text %}
-                            <p class="text-sm text-gray-500">{{ field.help_text }}</p>
+                            <p class="text-xs text-gray-500">{{ field.help_text }}</p>
                         {% endif %}
                         {% if field.errors %}
-                            <p class="text-red-500">{{ field.errors }}</p>
-                        {% endif %}
+                            <p class="text-xs text-red-500 mt-1">{{ field.errors }}</p>
+                        {% endif %} 
                     </div>
                 {% endfor %}
-                <div class="flex justify-end my-4">
+                <div class="flex justify-start my-4">
                     <button type="submit" class="text-white btn bg-custom-500 border-custom-500 hover:text-white hover:bg-custom-600 hover:border-custom-600 focus:text-white focus:bg-custom-600 focus:border-custom-600 focus:ring focus:ring-custom-100 active:text-white active:bg-custom-600 active:border-custom-600 active:ring active:ring-custom-100 dark:ring-custom-400/20">Create</button>
                 </div>
             </form>

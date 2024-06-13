@@ -191,12 +191,12 @@ class CreateVoucher(SessionRequiredMixin, FormView):
             if hotspot.add_user(username, password, uptime_limit, profile.profile_name):
                 voucher = Voucher(username=username, password=password, price_min=price_min, price_max=price_max, session=session, profile=profile, uptime_value=uptime_value, uptime_unit=uptime_unit)
                 voucher.save()
-                vouchers.append(model_to_dict(voucher))
+                vouchers.append(voucher.serialize())
                 qr_path = os.path.join(settings.QR_DIR, f"{username}.png")
                 generate_qr(session.DNS_name, username, password, qr_path)
         
-        VoucherPdf(session=session, name=name).save()
-        pdf_path = os.path.join(settings.PDF_DIR, f"{name}.pdf")
-        create_voucher_pdf(vouchers, settings.QR_DIR, pdf_path)
-        
+        if len(vouchers) > 0:
+            VoucherPdf(session=session, name=name).save()
+            pdf_path = os.path.join(settings.PDF_DIR, f"{name}.pdf")
+            create_voucher_pdf(vouchers, settings.QR_DIR, pdf_path)
         return super().form_valid(form)

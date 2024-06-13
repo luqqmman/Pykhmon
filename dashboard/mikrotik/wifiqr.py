@@ -24,6 +24,7 @@ def generate_qr(login_address, hot_user, hot_password, save_path):
 
 
 def create_voucher_pdf(vouchers, qr_path, pdf_path):
+    template_path = 'dashboard/static/voucher_template/neetnoox.png'
     c = canvas.Canvas(pdf_path, pagesize=A4)
     width, height = A4
     margin = 10 * mm
@@ -49,15 +50,17 @@ def create_voucher_pdf(vouchers, qr_path, pdf_path):
         y_position = height - margin - box_height - (row * (box_height + margin))
 
         # Draw border around the voucher box
+        c.drawImage(template_path, x_position, y_position, width=box_width, height=box_height)
         c.rect(x_position, y_position, box_width, box_height)
 
         # Draw title
-        c.drawString(x_position + margin, y_position + box_height - title_height, f"Voucher")
+        # c.drawString(x_position + margin, y_position + box_height - title_height, f"Voucher")
 
         # Draw username, password, and profile
-        c.drawString(x_position + margin + qr_size + 0.5*margin, y_position + 0.5*box_height + 30, f"Username: {voucher['username']}")
-        c.drawString(x_position + margin + qr_size + 0.5*margin, y_position + 0.5*box_height + 10, f"Password: {voucher['password']}")
-        c.drawString(x_position + margin + qr_size + 0.5*margin, y_position + 0.5*box_height - 10, f"Profile: {voucher['profile']}")
+        c.setFont("Courier", 9)
+        c.drawString(x_position + margin + qr_size + 0.5*margin, y_position + 0.5*box_height + 30, f"username: {voucher['username']}")
+        c.drawString(x_position + margin + qr_size + 0.5*margin, y_position + 0.5*box_height + 10, f"password: {voucher['password']}")
+        c.drawString(x_position + margin + qr_size + 0.5*margin, y_position + 0.5*box_height - 10, f"profile: {voucher['profile']}")
 
         # Draw QR code with border
         qr_x = x_position + margin
@@ -69,8 +72,8 @@ def create_voucher_pdf(vouchers, qr_path, pdf_path):
         # Draw ad space as a rectangle
         ad_x = x_position + margin
         ad_y = y_position + margin
-        c.rect(ad_x, ad_y, box_width - 2 * margin, 0.75*ad_height)
-        c.drawString(ad_x + 2 * mm, ad_y + 6 * mm, "Ad space")
+        # c.rect(ad_x, ad_y, box_width - 2 * margin, 0.75*ad_height)
+        # c.drawString(ad_x + 2 * mm, ad_y + 6 * mm, "Ad space")
 
     c.save()
     return pdf_path

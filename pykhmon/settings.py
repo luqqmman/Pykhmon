@@ -134,6 +134,8 @@ QR_DIR = os.path.join(BASE_DIR, 'dashboard/static/dashboard/qr')
 PDF_DIR = os.path.join(BASE_DIR, 'dashboard/static/dashboard/pdf')
 MODEL_PATH = os.path.join(BASE_DIR, 'dashboard/model/my_model.h5')
 CSV_PATH = os.path.join(BASE_DIR, 'dashboard/model/cust_sales.csv')
+FORECAST_PATH = os.path.join(BASE_DIR, 'dashboard/static/forecast/forecast.png')
+
 
 
 

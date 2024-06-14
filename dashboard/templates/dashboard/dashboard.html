@@ -1,4 +1,5 @@
 {% extends "dashboard/base.html" %}
+{% load static %}
 
 {% block title %}Dashboard{% endblock %}
 
@@ -36,7 +37,8 @@
         <div>monthly {{ monthly }}</div>
         <div>forecast {{ forecast }}</div>
         <div>session info {{ session_info }}</div>
-
+        
+        <img src="{% static 'forecast/forecast.png' %}" alt="">
 
 
         <div class="-mx-5 overflow-x-auto">

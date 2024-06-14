@@ -5,6 +5,7 @@ from keras.models import load_model
 from sklearn.preprocessing import MinMaxScaler
 from tensorflow.keras.preprocessing.sequence import TimeseriesGenerator
 
+
 from django.conf import settings
 
 def predict_next_year():
@@ -54,9 +55,14 @@ def predict_next_year():
     plt.savefig(settings.FORECAST_PATH)
     return data
 
+
 def predict_customer():
+    model = load_model(settings.CUSTOMER_MODEL_PATH)
     sales_data = pd.read_csv(settings.CSV_PATH, parse_dates=True, index_col='date')
     sales_data.drop(['profit'], axis=1, inplace=True)
+
+    with open(settings.CUSTOMER_SCALER_PATH, 'rb') as f:
+        scaler = pickle.load(f)
 
     forecast_start_date = '2024-06-14'
     periods = 12

@@ -31,6 +31,13 @@ class VoucherForm(forms.ModelForm):
             'placeholder': 'Voucher Name'
         })
     )
+
+    def __init__(self, *args, **kwargs):
+        session_id = kwargs.pop('session_id', None)
+        super().__init__(*args, **kwargs)
+        if session_id:
+            self.fields['profile'].queryset = Profile.objects.filter(session_id=session_id)
+
     class Meta:
         model = Voucher
         fields = ['profile', 'uptime_value', 'uptime_unit', 'price_min', 'price_max']
@@ -60,6 +67,8 @@ class VoucherForm(forms.ModelForm):
             }),
         }
 
+
+
 class ProfileForm(forms.ModelForm):
     class Meta:
         model = Profile
@@ -73,3 +82,4 @@ class ProfileForm(forms.ModelForm):
             'shared_users': forms.NumberInput(attrs={'class': 'form-input mt-1 block w-full'}),
             'description': forms.Textarea(attrs={'class': 'form-textarea mt-1 block w-full'}),
         }
+

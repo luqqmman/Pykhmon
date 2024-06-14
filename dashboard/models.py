@@ -82,4 +82,4 @@ class Voucher(models.Model):
 
 class VoucherPdf(models.Model):
     session = models.ForeignKey(Session, on_delete=models.CASCADE, related_name='voucher_pdf_session')
-    name = models.CharField(max_length=64, unique=True)
+    name = models.CharField(max_length=64)

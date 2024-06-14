@@ -74,10 +74,12 @@ class Dashboard(SessionRequiredMixin, View):
                 'daily': daily['price_min__sum'],
                 'weekly': weekly['price_min__sum'],
                 'monthly': monthly['price_min__sum'],
-                'forecast': predict_next_year(),
                 'forcast_customer': predict_customer(),
                 'memory': memory,
                 'hdd' : hdd
+
+                'forecast_sales': predict_next_year(),
+                'forecast_customer': predict_customer(),
             }
             context.update(resource)
             return render(request, 'dashboard/dashboard.html', context)

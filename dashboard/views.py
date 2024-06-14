@@ -73,7 +73,7 @@ class Dashboard(SessionRequiredMixin, View):
                 'forecast': predict_next_year()
             }
             context.update(resource)
-            return render(requh5est, 'dashboard/dashboard.html', context)
+            return render(request, 'dashboard/dashboard.html', context)
         messages.warning(request, "Connection error: Router address unreachable")
         return render(request, 'dashboard/dashboard.html')
 

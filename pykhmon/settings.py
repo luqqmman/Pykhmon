@@ -26,7 +26,7 @@ SECRET_KEY = 'django-insecure-0*bzf4+ll3^4-kjt)dwyi)5!cl((uv!0!g!1*2-b!8b!j$xg1o
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['*']
 
 
 # Application definition
@@ -120,6 +120,7 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/5.0/howto/static-files/
 
 STATIC_URL = 'static/'
+STATIC_ROOT = BASE_DIR / 'static'
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.0/ref/settings/#default-auto-field
@@ -131,4 +132,10 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 # PATH
 QR_DIR = os.path.join(BASE_DIR, 'dashboard/static/dashboard/qr')
 PDF_DIR = os.path.join(BASE_DIR, 'dashboard/static/dashboard/pdf')
+MODEL_PATH = os.path.join(BASE_DIR, 'dashboard/model/my_model.h5')
+CSV_PATH = os.path.join(BASE_DIR, 'dashboard/model/cust_sales.csv')
+FORECAST_PATH = os.path.join(BASE_DIR, 'dashboard/static/forecast/forecast.png')
+
+
+
 

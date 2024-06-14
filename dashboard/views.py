@@ -15,6 +15,7 @@ from string import ascii_letters, ascii_lowercase
 
 from .mikrotik.routeros_api import HotspotApi
 from .mikrotik.wifiqr import generate_qr, create_voucher_pdf
+# from .model.forecast import predict_next_year
 
 from .mixins import SessionRequiredMixin
 from .models import Session, Profile, Voucher, VoucherPdf
@@ -55,11 +56,24 @@ class Dashboard(SessionRequiredMixin, View):
     def get(self, request, *args, **kwargs):
         hotspot = HotspotApi.from_dict(request.session['api'])
         resource = hotspot.resource()
+        session = Session.objects.get(pk=self.request.session["pk"])
+        vouchers = Voucher.objects.filter(session=session)
+        daily = vouchers.filter(checkout_date=date.today()).aggregate(Sum('price_min', default=0))
+        weekly = vouchers.filter(checkout_date__gte=date.today()-timedelta(days=7)).aggregate(Sum('price_min', default=0))
+        monthly = vouchers.filter(checkout_date__gte=date.today()-timedelta(weeks=4)).aggregate(Sum('price_min', default=0))
         if resource:
-            resource = [(key.replace('-', '_'), val) for key, val in resource.items()]
+            resource = dict([(key.replace('-', '_'), val) for key, val in resource.items()])
+            memory = int(resource['free_memory']) / int(resource['total_memory']) * 100
+            print(resource)
             context = {
-                'resource': dict(resource),
+                'resource': resource,
                 'active_users': hotspot.get_active_users(),
+                'session_info': session.serialize(),
+                'daily': daily['price_min__sum'],
+                'weekly': weekly['price_min__sum'],
+                'monthly': monthly['price_min__sum'],
+                # 'forecast': predict_next_year(),
+                'memory': memory
             }
             context.update(resource)
             return render(request, 'dashboard/dashboard.html', context)
@@ -191,12 +205,23 @@ class CreateVoucher(SessionRequiredMixin, FormView):
             if hotspot.add_user(username, password, uptime_limit, profile.profile_name):
                 voucher = Voucher(username=username, password=password, price_min=price_min, price_max=price_max, session=session, profile=profile, uptime_value=uptime_value, uptime_unit=uptime_unit)
                 voucher.save()
-                vouchers.append(model_to_dict(voucher))
+                vouchers.append(voucher.serialize())
                 qr_path = os.path.join(settings.QR_DIR, f"{username}.png")
                 generate_qr(session.DNS_name, username, password, qr_path)
         
-        VoucherPdf(session=session, name=name).save()
-        pdf_path = os.path.join(settings.PDF_DIR, f"{name}.pdf")
-        create_voucher_pdf(vouchers, settings.QR_DIR, pdf_path)
-        
+        if len(vouchers) > 0:
+            VoucherPdf(session=session, name=name).save()
+            pdf_path = os.path.join(settings.PDF_DIR, f"{name}.pdf")
+            create_voucher_pdf(vouchers, settings.QR_DIR, pdf_path)
         return super().form_valid(form)
+
+
+    def get_form_kwargs(self):
+        kwargs = super().get_form_kwargs()
+        kwargs['session_id'] = self.request.session.get("pk")  # Pass session_id to the form
+        return kwargs
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['form'] = self.get_form()  # Include the form in the context
+        return context

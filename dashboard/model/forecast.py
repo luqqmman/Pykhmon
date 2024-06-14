@@ -67,9 +67,8 @@ def predict_customer():
     with open(settings.CUSTOMER_SCALER_PATH, 'rb') as f:
         scaler = pickle.load(f)
 
-    forecast_start_date = '2024-06-14'
     forecast_start_date = pd.Timestamp("today").strftime("%Y-%m-%d")
-    periods = 12
+    periods = 7
     length = 10
     n_features = 1
 
@@ -91,13 +90,7 @@ def predict_customer():
     forecast_data = pd.DataFrame(forecast, index=forecast_index, columns=['Forecast'])
     predictions_array = forecast_data['Forecast'].values
 
-
     x = [index.day_name() for index in forecast_index]
-
-    print("Forecast Data:")
-    print(forecast_data)
-    print("\nPredictions Array (for backend):")
-    print(predictions_array)
 
     plt.figure(figsize=(10, 6))
     plt.plot(x, predictions_array, marker='o', linestyle='-', color='b')

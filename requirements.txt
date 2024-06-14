@@ -13,3 +13,4 @@ typing_extensions==4.11.0
 urllib3==2.2.1
 tensorflow
 scikit-learn
+matplotlib

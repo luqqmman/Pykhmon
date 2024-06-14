@@ -63,7 +63,6 @@ class Dashboard(SessionRequiredMixin, View):
         monthly = vouchers.filter(checkout_date__gte=date.today()-timedelta(weeks=4)).aggregate(Sum('price_min', default=0))
         if resource:
             resource = dict([(key.replace('-', '_'), val) for key, val in resource.items()])
-            print(predict_customer())
             context = {
                 'resource': resource,
                 'active_users': hotspot.get_active_users(),
@@ -71,7 +70,8 @@ class Dashboard(SessionRequiredMixin, View):
                 'daily': daily['price_min__sum'],
                 'weekly': weekly['price_min__sum'],
                 'monthly': monthly['price_min__sum'],
-                'forecast': predict_next_year(),
+                'forecast_sales': predict_next_year(),
+                'forecast_customer': predict_customer(),
             }
             context.update(resource)
             return render(request, 'dashboard/dashboard.html', context)

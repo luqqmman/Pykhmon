@@ -67,7 +67,6 @@ class Dashboard(SessionRequiredMixin, View):
             hdd = math.ceil(int(resource['free_hdd_space']) / int(resource['total_hdd_space']) * 100)
             memory = math.ceil(int(resource['free_memory']) / int(resource['total_memory']) * 100)
 
-            print(resource)
             context = {
                 'resource': resource,
                 'active_users': hotspot.get_active_users(),
@@ -75,7 +74,8 @@ class Dashboard(SessionRequiredMixin, View):
                 'daily': daily['price_min__sum'],
                 'weekly': weekly['price_min__sum'],
                 'monthly': monthly['price_min__sum'],
-                # 'forecast': predict_next_year(),
+                'forecast': predict_next_year(),
+                'forcast_customer': predict_customer(),
                 'memory': memory,
                 'hdd' : hdd
             }

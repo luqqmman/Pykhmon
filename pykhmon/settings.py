@@ -132,9 +132,12 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 # PATH
 QR_DIR = os.path.join(BASE_DIR, 'dashboard/static/dashboard/qr')
 PDF_DIR = os.path.join(BASE_DIR, 'dashboard/static/dashboard/pdf')
-MODEL_PATH = os.path.join(BASE_DIR, 'dashboard/model/my_model.h5')
 CSV_PATH = os.path.join(BASE_DIR, 'dashboard/model/cust_sales.csv')
-FORECAST_PATH = os.path.join(BASE_DIR, 'dashboard/static/forecast/forecast.png')
+SALES_MODEL_PATH = os.path.join(BASE_DIR, 'dashboard/model/my_model.h5')
+SALES_FORECAST_PATH = os.path.join(BASE_DIR, 'dashboard/static/forecast/forecast.png')
+CUSTOMER_MODEL_PATH = os.path.join(BASE_DIR, 'dashboard/model/cust_model.h5')
+CUSTOMER_SCALER_PATH = os.path.join(BASE_DIR, 'dashboard/model/cust_scaler.pkl')
+CUSTOMER_FORECAST_PATH = os.path.join(BASE_DIR, 'dashboard/static/forecast/customer.png')
 
 
 

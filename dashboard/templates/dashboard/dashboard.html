@@ -68,6 +68,16 @@
                 </div>
             </div><!--end col-->
         </div><!--end grid-->
+        <div>daily {{ daily }}</div>
+        <div>weekly {{ weekly }}</div>
+        <div>monthly {{ monthly }}</div>
+        <div>forecast {{ forecast }}</div>
+        <div>session info {{ session_info }}</div>
+        
+        <img src="{% static 'forecast/forecast.png' %}" alt="">
+        <img src="{% static 'forecast/customer.png' %}" alt="">
+
+
         <div class="-mx-5 overflow-x-auto">
             <table class="w-full whitespace-nowrap">
                 <thead class="ltr:text-left rtl:text-right bg-slate-100 text-slate-500 dark:text-zink-200 dark:bg-zink-600">

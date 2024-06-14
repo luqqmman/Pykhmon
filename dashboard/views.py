@@ -15,7 +15,7 @@ from string import ascii_letters, ascii_lowercase
 
 from .mikrotik.routeros_api import HotspotApi
 from .mikrotik.wifiqr import generate_qr, create_voucher_pdf
-# from .model.forecast import predict_next_year
+from .model.forecast import predict_next_year, predict_customer
 
 from .mixins import SessionRequiredMixin
 from .models import Session, Profile, Voucher, VoucherPdf

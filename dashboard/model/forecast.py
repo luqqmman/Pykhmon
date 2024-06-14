@@ -92,7 +92,7 @@ def predict_customer():
     predictions_array = forecast_data['Forecast'].values
 
 
-    x = [days[index.day-1] for index in forecast_index]
+    x = [index.day_name() for index in forecast_index]
 
     print("Forecast Data:")
     print(forecast_data)

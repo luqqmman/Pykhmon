@@ -5,29 +5,18 @@
 
 {% block content %}
   <div class="p-4 bg-white rounded shadow">
-    <h3>Resource</h3>
-    <p>cpu load: {{ cpu_load }} %</p>
-    <p>memory: {{ memory }} %</p>
-    <p>hdd: {{ hdd }} %</p>
-
-    <div>daily {{ daily }}</div>
-    <div>weekly {{ weekly }}</div>
-    <div>monthly {{ monthly }}</div>
-    <div>forecast {{ forecast }}</div>
-    <div>session info {{ session_info }}</div>
-
-    <div>daily {{ daily }}</div>
-    <div>weekly {{ weekly }}</div>
-    <div>monthly {{ monthly }}</div>
-    <div>forecast {{ forecast }}</div>
-    <div>session info {{ session_info }}</div>
-    
-    <img src="{% static 'forecast/forecast.png' %}" alt="">
     <img src="{% static 'forecast/customer.png' %}" alt="">
-
-    
-
   </div>
+
+    <div class="col-span-12 card md:col-span-6 lg:col-span-3 2xl:col-span-2">
+        <div class="text-center card-body">
+            <div class="flex items-center justify-center mx-auto rounded-full w-14 h-14 bg-custom-100 text-custom-500 dark:bg-custom-500/20">
+                <i data-lucide="wallet-2"></i>
+            </div>
+            <h5 class="mt-4 mb-2">Rp. <span class="counter-value" data-target="{{ daily }}">0</span></h5>
+            <p class="text-slate-500 dark:text-zink-200">Today Revenue</p>
+        </div>
+    </div><!--end col-->
 
   <div class="col-span-12 card lg:col-span-6 2xl:col-span-12 mt-5">
     <div class="card-body">

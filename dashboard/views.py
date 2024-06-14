@@ -15,7 +15,7 @@ from string import ascii_letters, ascii_lowercase
 
 from .mikrotik.routeros_api import HotspotApi
 from .mikrotik.wifiqr import generate_qr, create_voucher_pdf
-# from .model.forecast import predict_next_year
+from .model.forecast import predict_next_year, predict_customer
 
 from .mixins import SessionRequiredMixin
 from .models import Session, Profile, Voucher, VoucherPdf
@@ -63,8 +63,7 @@ class Dashboard(SessionRequiredMixin, View):
         monthly = vouchers.filter(checkout_date__gte=date.today()-timedelta(weeks=4)).aggregate(Sum('price_min', default=0))
         if resource:
             resource = dict([(key.replace('-', '_'), val) for key, val in resource.items()])
-            memory = int(resource['free_memory']) / int(resource['total_memory']) * 100
-            print(resource)
+            print(predict_customer())
             context = {
                 'resource': resource,
                 'active_users': hotspot.get_active_users(),
@@ -72,7 +71,7 @@ class Dashboard(SessionRequiredMixin, View):
                 'daily': daily['price_min__sum'],
                 'weekly': weekly['price_min__sum'],
                 'monthly': monthly['price_min__sum'],
-                # 'forecast': predict_next_year(),
+                'forecast': predict_next_year(),
                 'memory': memory
             }
             context.update(resource)

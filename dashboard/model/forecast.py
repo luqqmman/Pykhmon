@@ -3,10 +3,12 @@ import numpy as np
 import matplotlib.pyplot as plt
 from keras.models import load_model
 from sklearn.preprocessing import MinMaxScaler
+from tensorflow.keras.preprocessing.sequence import TimeseriesGenerator
+
 from django.conf import settings
 
 def predict_next_year():
-    model = load_model(settings.MODEL_PATH)
+    model = load_model(settings.SALES_MODEL_PATH)
     sales_data = pd.read_csv(settings.CSV_PATH, parse_dates=True, index_col='date')
     sales_data.drop(['customer'], axis=1, inplace=True)
 
@@ -51,3 +53,36 @@ def predict_next_year():
     # Menampilkan plot
     plt.savefig(settings.FORECAST_PATH)
     return data
+
+def predict_customer():
+    sales_data = pd.read_csv(settings.CSV_PATH, parse_dates=True, index_col='date')
+    sales_data.drop(['profit'], axis=1, inplace=True)
+
+    forecast_start_date = '2024-06-14'
+    periods = 12
+    length = 10
+    n_features = 1
+
+    last_data = sales_data[-length:]
+    scaled_last_data = scaler.transform(last_data)
+    input_data = []
+
+    for i in range(periods):
+        if i == 0:
+            current_batch = scaled_last_data.reshape((1, length, n_features))
+        else:
+            current_batch = np.append(current_batch[:,1:,:], [[pred]], axis=1)
+
+        pred = model.predict(current_batch)[0]
+        input_data.append(pred)
+
+    forecast = scaler.inverse_transform(input_data)
+    forecast_index = pd.date_range(start=forecast_start_date, periods=periods, freq='D')
+    forecast_data = pd.DataFrame(forecast, index=forecast_index, columns=['Forecast'])
+    predictions_array = forecast_data['Forecast'].values
+
+    print("Forecast Data:")
+    print(forecast_data)
+    print("\nPredictions Array (for backend):")
+    print(predictions_array)
+    return forecast_data

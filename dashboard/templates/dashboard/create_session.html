@@ -43,9 +43,16 @@
                 {{ form.DNS_name.errors }}
             </div>
             <div class="text-center">
-                <button type="submit" class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-700 transition-colors duration-300">Submit</button>
+                <button type="submit" class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-700 transition-colors duration-300 w-full">Submit</button>
             </div>
         </form>
+        <div class="text-center mt-2">
+            <a href="{% url 'select_session' %}" >
+                <button class="text-blue-500 px-4 py-2 rounded bg-white hover:bg-blue-50 w-full border-dashed border-blue-500 border-1 w-full border">
+                    Back
+                </button>
+            </a>
+        </div>
     </div>
 </body>
 </html>

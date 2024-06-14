@@ -66,14 +66,14 @@ class Dashboard(SessionRequiredMixin, View):
             context = {
                 'resource': dict(resource),
                 'active_users': hotspot.get_active_users(),
-                'session_info': session,
+                'session_info': session.serialize(),
                 'daily': daily['price_min__sum'],
                 'weekly': weekly['price_min__sum'],
                 'monthly': monthly['price_min__sum'],
                 'forecast': predict_next_year()
             }
             context.update(resource)
-            return render(request, 'dashboard/dashboard.html', context)
+            return render(requh5est, 'dashboard/dashboard.html', context)
         messages.warning(request, "Connection error: Router address unreachable")
         return render(request, 'dashboard/dashboard.html')
 

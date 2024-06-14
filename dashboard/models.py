@@ -11,6 +11,15 @@ class Session(models.Model):
     
     def __str__(self):
         return f"{self.session_name}: ({self.mikrotik_IP})" 
+    
+    def serialize(self):
+        return {
+            'session_name': self.session_name,
+            'mikrotik address': self.mikrotik_IP,
+            'username': self.username,
+            'servername': self.hotspot_server_name,
+            'DNS_name': self.DNS_name
+        }
 
 
 class Profile(models.Model):

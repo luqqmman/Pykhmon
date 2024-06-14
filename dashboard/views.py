@@ -25,6 +25,7 @@ from reportlab.pdfgen import canvas
 from PIL import Image
 from datetime import date, timedelta
 import os
+import math
 
 
 
@@ -63,6 +64,9 @@ class Dashboard(SessionRequiredMixin, View):
         monthly = vouchers.filter(checkout_date__gte=date.today()-timedelta(weeks=4)).aggregate(Sum('price_min', default=0))
         if resource:
             resource = dict([(key.replace('-', '_'), val) for key, val in resource.items()])
+            hdd = math.ceil(int(resource['free_hdd_space']) / int(resource['total_hdd_space']) * 100)
+            memory = math.ceil(int(resource['free_memory']) / int(resource['total_memory']) * 100)
+
             context = {
                 'resource': resource,
                 'active_users': hotspot.get_active_users(),
@@ -70,6 +74,10 @@ class Dashboard(SessionRequiredMixin, View):
                 'daily': daily['price_min__sum'],
                 'weekly': weekly['price_min__sum'],
                 'monthly': monthly['price_min__sum'],
+                'forcast_customer': predict_customer(),
+                'memory': memory,
+                'hdd' : hdd
+
                 'forecast_sales': predict_next_year(),
                 'forecast_customer': predict_customer(),
             }

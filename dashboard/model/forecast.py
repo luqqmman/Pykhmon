@@ -1,6 +1,6 @@
 import pandas as pd
 import numpy as np
-import matplotlib as plt
+import matplotlib.pyplot as plt
 from keras.models import load_model
 from sklearn.preprocessing import MinMaxScaler
 from django.conf import settings
@@ -29,16 +29,16 @@ def predict_next_year():
     forecast = full_scaler.inverse_transform(forecast)
 
 
-    forecast_index = pd.date_range(start='2024-06-1', periods=periods, freq='MS')
+    forecast_index = pd.date_range(start=pd.Timestamp("today").strftime("%Y-%m-%d"), periods=periods, freq='MS')
     forecast_data = pd.DataFrame(data=forecast, index=forecast_index, columns=['Forecast'])
     
-
+    months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"]
 
     data = [d[0] for d in model.predict(forecast_data)]
-    x = [str[n] for n in forecast_index]
+    x = [months[index.month-1] for index in forecast_index]
 
     plt.figure(figsize=(10, 6))
-    plt.plot(months, forecast, marker='o', linestyle='-', color='b')
+    plt.plot(x, data, marker='o', linestyle='-', color='b')
 
     # Menambahkan judul dan label
     plt.title('Forecast for the Next Year')
